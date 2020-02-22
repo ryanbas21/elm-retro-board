@@ -1,20 +1,22 @@
-module Main exposing (..)
+module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
-import Html exposing (Html, text, div, h1, img)
+import Html exposing (Html, button, div, h1, img, input, label, text)
 import Html.Attributes exposing (src)
+import Html.Events exposing (onClick, onInput)
+
 
 
 ---- MODEL ----
 
 
 type alias Model =
-    {}
+    { title : String, savedTitle : Bool }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( { title = "Remote Retro Board", savedTitle = False }, Cmd.none )
 
 
 
@@ -22,12 +24,18 @@ init =
 
 
 type Msg
-    = NoOp
+    = UpdateTitle String
+    | SaveTitle
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        UpdateTitle str ->
+            ( { model | title = str }, Cmd.none )
+
+        SaveTitle ->
+            ( { model | savedTitle = True }, Cmd.none )
 
 
 
@@ -37,9 +45,24 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
+        [ div []
+            [ h1 [] [ text model.title ]
+            , handleTitle model
+            ]
         ]
+
+
+handleTitle : Model -> Html Msg
+handleTitle model =
+    if model.savedTitle then
+        div [] []
+
+    else
+        div []
+            [ label [] [ text "Change Title" ]
+            , input [ onInput UpdateTitle ] []
+            , button [ onClick SaveTitle ] [ text "Save Title" ]
+            ]
 
 
 
